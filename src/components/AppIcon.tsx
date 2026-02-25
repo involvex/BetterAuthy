@@ -9,6 +9,7 @@ import bastillion from '../images/bastillion.png';
 import betterment from '../images/betterment.png';
 import carta from '../images/carta.png';
 import guideline from '../images/guideline.png';
+import headway from '../images/headway.svg';
 import idme from '../images/id.me.png';
 import justworks from '../images/justworks.jpg';
 import microsoft from '../images/microsoft.svg?raw';
@@ -68,12 +69,14 @@ function getIcon(name?: string): Icon | Image | undefined {
       return { ...icons.siFacebook, padding: false, type: IconType.Icon };
     case 'guideline':
       return { url: guideline, type: IconType.Image };
+    case 'headway':
+      return { url: headway, type: IconType.Image, padding: 'p-1.5' };
     case 'id.me':
       return { url: idme, type: IconType.Image };
     case 'justworks':
       return { url: justworks, type: IconType.Image };
     case 'microsoft':
-      return { svg: microsoft, title: 'Microsoft', hex: '727272', padding: 'p-1.5', type: IconType.Icon };
+      return { svg: microsoft, title: 'Microsoft', hex: '929292', padding: 'p-1.5', type: IconType.Icon };
     case 'nintendo':
       return { svg: nintendo, title: 'Nintendo', hex: 'dd2020', padding: 'p-1', type: IconType.Icon };
     case 'nas':
@@ -129,7 +132,7 @@ export function AppIcon({ name, className }: { name: string; className?: string 
     className;
 
   if (!icon) {
-    console.warn(`No icon found for ${name}`);
+    if (name) console.warn(`No icon found for ${name}`);
     return (
       <div className={imgClass}>
         <FaLock />

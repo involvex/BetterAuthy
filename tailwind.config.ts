@@ -11,6 +11,9 @@ export default {
         danger: '#f07f7b',
         warning: '#f0c27b',
       },
+      boxShadow: {
+        centered: '0 0 4px #334155',
+      },
       keyframes: {
         wiggle: {
           '0%, 100%': { transform: 'rotate(-0.5deg)' },

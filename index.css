@@ -21,19 +21,12 @@ h1 {
   font-family: 'Teko', sans-serif;
 }
 
-* {
-  @apply outline-none outline-offset-0;
-  transition:
-    outline-width 0.25s,
-    outline-color 0.25s;
-}
-
 :focus-visible {
-  @apply outline-4 outline-primary;
+  @apply outline-none ring-2 ring-primary transition-all;
 }
 
 button {
-  @apply bg-primary text-white font-bold py-2 px-4 rounded transition-all;
+  @apply bg-primary text-white font-bold py-2 px-4 rounded-md transition-all;
 }
 
 button:not(:disabled, .remove) {
@@ -49,11 +42,11 @@ button.icon {
 }
 
 button:focus {
-  @apply outline-offset-2;
+  @apply ring-offset-2 ring-offset-slate-700;
 }
 
 input {
-  @apply appearance-none border border-slate-700 rounded w-full py-2 px-3 bg-slate-800 text-gray-200 leading-tight;
+  @apply appearance-none border border-slate-700 rounded-md w-full py-2 px-3 bg-slate-800 text-gray-200 leading-tight;
 }
 
 .text-shadow {

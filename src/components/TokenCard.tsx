@@ -1,6 +1,6 @@
 import { decrypt } from '@metamask/browser-passworder';
 import { DocumentReference, arrayRemove, arrayUnion, updateDoc } from 'firebase/firestore';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { FaArchive, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { twJoin } from 'tailwind-merge';
@@ -128,7 +128,7 @@ export function TokenCard({
   return (
     <div
       className={twJoin(
-        'p-3 bg-slate-800 border border-slate-700 rounded-md select-none flex gap-6 justify-between items-center hover:brightness-[90%] relative cursor-pointer transition-all rotate-0',
+        'p-3 bg-slate-800 border border-slate-700 shadow-centered rounded-lg select-none flex gap-6 justify-between items-center relative cursor-pointer transition-all duration-300 rotate-0 bg-opacity-30 hover:bg-slate-700 hover:bg-opacity-40',
         editMode && 'animate-wiggle',
         data.archived && 'opacity-50'
       )}

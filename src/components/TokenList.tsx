@@ -100,12 +100,11 @@ export function TokenList({
 
               <div className="relative w-full">
                 <input
-                  className="pl-10"
+                  className="pl-10 bg-slate-700 bg-opacity-20 hover:bg-slate-600 hover:bg-opacity-30 focus-within:bg-slate-600 focus-within:bg-opacity-30 shadow-centered transition-all"
                   type="search"
                   value={search}
                   placeholder="Search tokens"
                   onChange={(e) => setSearch(e.target.value)}
-                  autoFocus={process.env.NODE_ENV !== 'development'}
                   onFocus={() => setSearchFocused(true)}
                   onBlur={() => setSearchFocused(false)}
                 />
@@ -191,26 +190,25 @@ export function TokenList({
         )}
       </div>
 
-      {editKey && (
-        <Modal
-          title={keyToEdit?.name || keyToEdit?.secret ? 'Edit existing key' : 'Add a new key'}
-          onClose={() => {
+      <Modal
+        title={keyToEdit?.name || keyToEdit?.secret ? 'Edit Existing Token' : 'Add New Token'}
+        onClose={() => {
+          setEditKey(false);
+          setKeyToEdit(undefined);
+        }}
+        open={editKey}
+      >
+        <EditKey
+          name={keyToEdit?.name}
+          secret={keyToEdit?.secret}
+          archived={keyToEdit?.archived || false}
+          userRef={userRef}
+          close={() => {
             setEditKey(false);
             setKeyToEdit(undefined);
           }}
-        >
-          <EditKey
-            name={keyToEdit?.name}
-            secret={keyToEdit?.secret}
-            archived={keyToEdit?.archived || false}
-            userRef={userRef}
-            close={() => {
-              setEditKey(false);
-              setKeyToEdit(undefined);
-            }}
-          />
-        </Modal>
-      )}
+        />
+      </Modal>
     </>
   );
 }

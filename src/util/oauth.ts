@@ -1,4 +1,5 @@
 // PKCE helpers and GitHub OAuth starter for static-first flow
+import { BASE_PATH, withBaseUrl } from './basePath';
 
 function base64urlencode(buffer: ArrayBuffer) {
   const bytes = new Uint8Array(buffer);
@@ -32,7 +33,7 @@ export function makeState() {
 }
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || '';
-const REDIRECT_URI = import.meta.env.VITE_GITHUB_REDIRECT_URI || `${location.origin}/oauth/callback`;
+const REDIRECT_URI = import.meta.env.VITE_GITHUB_REDIRECT_URI || withBaseUrl('oauth/callback');
 const SCOPE = 'read:user user:email';
 
 import { setSession } from './session';
@@ -41,8 +42,8 @@ export async function startGitHubOAuth() {
   // In dev, skip real OAuth to simplify local testing
   if (import.meta.env.DEV) {
     setSession({ userId: 'dev', login: 'dev', email: 'dev@local', token: 'dev-token', expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 });
-    // Redirect to root after mocking session
-    location.href = '/';
+    // Redirect to base path after mocking session
+    location.href = BASE_PATH;
     return;
   }
 

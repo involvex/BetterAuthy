@@ -26,7 +26,7 @@ const manifest: Partial<ManifestOptions> = {
   id: 'com.involvex.betterauthy',
   name: 'BetterAuthy',
   short_name: 'BetterAuthy',
-  description: 'BetterAuthy is a 2FA app built using React and Firebase. Data is stored offline and encrypted at rest.',
+  description: 'BetterAuthy is a privacy-first 2FA app built using React. Data is stored offline and encrypted at rest.',
   orientation: 'any',
   icons: [
     {
@@ -126,7 +126,6 @@ export default defineConfig({
       output: {
         manualChunks: (id: string) => {
           if (id.includes('node_modules/')) {
-            if (id.includes('@firebase')) return 'firebase';
             if (id.includes('@metamask') || id.includes('lodash')) return 'metamask';
             if (id.includes('@yudiel/react-qr-scanner')) return 'qr-scanner';
             if (id.includes('simple-icons')) return 'simple-icons';

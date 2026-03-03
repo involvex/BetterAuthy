@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { exchangeCodeForToken, fetchGitHubProfile } from '../util/oauth';
 import { setSession } from '../util/session';
+import { BASE_PATH } from '../util/basePath';
 
 export function OAuthCallback() {
   useEffect(() => {
@@ -24,7 +25,7 @@ export function OAuthCallback() {
         sessionStorage.removeItem('oauth_code_verifier');
 
         // redirect home
-        location.href = '/';
+        location.href = BASE_PATH;
       } catch (err) {
         console.error('OAuth callback failed', err);
         // show error and allow manual redirect

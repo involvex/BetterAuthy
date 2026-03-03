@@ -1,21 +1,13 @@
-import { clearIndexedDbPersistence, terminate } from 'firebase/firestore';
-import { useSignOut } from 'react-firebase-hooks/auth';
 import { FaSignOutAlt } from 'react-icons/fa';
-
-import { auth, db } from '../../util/firebase';
+import { clearSession } from '../../util/session';
 
 export function Logout() {
-  const [signOut] = useSignOut(auth);
-
   return (
     <button
       className="icon bg-danger"
       onClick={async () => {
         try {
-          await signOut();
-          await terminate(db);
-          await clearIndexedDbPersistence(db);
-
+          clearSession();
           window.location.reload();
         } catch (err) {
           console.error(err);

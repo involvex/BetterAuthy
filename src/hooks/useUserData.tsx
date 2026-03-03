@@ -1,8 +1,6 @@
-import { DocumentReference, doc } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { useDocumentData } from 'react-firebase-hooks/firestore';
-
-import { auth, db } from '../util/firebase';
+import { useEffect, useState } from 'react';
+import { getUserData } from '../util/storage';
+import { getUserId } from '../util/session';
 
 export interface UserData {
   email: string;
@@ -26,9 +24,35 @@ export interface Key {
 }
 
 export function useUserData() {
-  const [user] = useAuthState(auth);
-  const userRef = doc(db, 'users', user?.uid || '') as DocumentReference<UserData>;
-  const [value, loading, error, snapshot] = useDocumentData(userRef);
+  const [data, setData] = useState<UserData | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | undefined>(undefined);
 
-  return { data: value, loading, error, userRef };
+  useEffect(() => {
+    let mounted = true;
+    const userId = getUserId();
+    if (!userId) {
+      setData(undefined);
+      setLoading(false);
+      return;
+    }
+
+    getUserData(userId)
+      .then((d) => {
+        if (!mounted) return;
+        setData(d);
+        setLoading(false);
+      })
+      .catch((e) => {
+        if (!mounted) return;
+        setError(e as Error);
+        setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return { data, loading, error, userKey: getUserId() };
 }

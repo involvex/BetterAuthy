@@ -17,7 +17,7 @@ export function LogoPage({
 }) {
   return (
     <div className="w-screen h-[100svh] flex flex-col justify-center items-center gap-5" {...props}>
-      <h1 className="text-center m-0 -mb-1">Factor 2FA</h1>
+      <h1 className="text-center m-0 -mb-1">BetterAuthy 2FA</h1>
       <Logo className={className} />
       {children}
 

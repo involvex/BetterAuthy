@@ -1,8 +1,5 @@
 import { encrypt } from '@metamask/browser-passworder';
-import { User } from 'firebase/auth';
-import { setDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaBroadcastTower } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
@@ -13,7 +10,6 @@ import { CodeContext } from '../contexts/CodeContext';
 import { useOnline } from '../hooks/useOnline';
 import { useServiceWorker } from '../hooks/useServiceWorker';
 import { useUserData } from '../hooks/useUserData';
-import { auth } from '../util/firebase';
 import { exportKeys, importKeys } from '../util/keys';
 import { Lock } from './Lock/Lock';
 import { Login } from './Login';
@@ -21,20 +17,23 @@ import { LogoPage } from './Logo';
 import { Menu } from './Menu';
 import { Progress } from './Progress';
 import { TokenList } from './TokenList';
+import { getUserId } from '../util/session';
+import { setUserData, updateUserData } from '../util/storage';
 
 export function App() {
-  const [user, loading, error] = useAuthState(auth);
+  // Client-side session based on GitHub OAuth
   useServiceWorker();
 
-  if (loading || error) return <LogoPage>{error && <p>Error: {error.message}</p>}</LogoPage>;
-
-  if (!user)
+  const userId = getUserId();
+  if (userId === undefined) {
     return (
       <LogoPage>
         <Login />
       </LogoPage>
     );
-  return <Authorized user={user} />;
+  }
+
+  return <Authorized userId={userId} />;
 }
 
 async function promptPin(token?: string): Promise<string | undefined> {
@@ -91,20 +90,23 @@ function OnlineStatus({ className }: { className?: string }) {
   );
 }
 
-function Authorized({ user }: { user: User }) {
-  const { data, loading, error, userRef } = useUserData();
+function Authorized({ userId }: { userId: string }) {
+  const { data, loading, error, userKey } = useUserData();
 
   const [token, setToken] = useState<string>();
   const [editMode, setEditMode] = useState(false);
   const [editKey, setEditKey] = useState(false);
 
-  useMigrateData(userRef, data);
+  useMigrateData(userKey, data);
   useLockTimer(setToken);
 
   useEffect(() => {
     if (!loading && !error && !data) {
       promptPin().then((code) => {
-        if (code) setDoc(userRef, { keys: [], recentKeys: [], email: user.email || '', code, webauthn: [] });
+        if (code)
+          setUserData(userId, { keys: [], recentKeys: [], email: '', code, webauthn: [] }).catch((e) =>
+            toast.error('Failed to create user')
+          );
         else toast.error('Failed to create user');
       });
     }
@@ -114,7 +116,7 @@ function Authorized({ user }: { user: User }) {
     if (!confirm('Would you like to update your pin?')) return;
     const code = await promptPin(token);
 
-    if (code) updateDoc(userRef, { code });
+    if (code) updateUserData(userKey, { code });
     else toast.error('Failed to update pin');
   };
 

@@ -1,5 +1,4 @@
 // A large portion of this code was written by chatgpt
-import { auth } from './firebase';
 
 const challenge = Uint8Array.from(window.crypto.getRandomValues(new Uint8Array(32)));
 

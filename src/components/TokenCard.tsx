@@ -1,5 +1,4 @@
 import { decrypt } from '@metamask/browser-passworder';
-import { DocumentReference, arrayRemove, arrayUnion, updateDoc } from 'firebase/firestore';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { FaArchive, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -12,6 +11,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import { useOnHold } from '../hooks/useOnHold';
 import { Key } from '../hooks/useUserData';
 import { AppIcon } from './AppIcon';
+import { updateUserData } from '../util/storage';
 
 enum HiddenType {
   Hidden,
@@ -31,7 +31,7 @@ export function TokenCard({
   addRecentKey,
 }: {
   data: Key;
-  userRef: DocumentReference;
+  userRef: string | undefined;
   timestamp: Date;
   onEdit: () => void;
   setEditMode: (value: boolean) => void;
@@ -171,15 +171,13 @@ export function TokenCard({
             `Are you sure you want to ${data.archived ? 'unarchive' : 'archive'} ${data.name}?`
           );
           if (confirm) {
-            // Remove old key
-            await updateDoc(userRef, {
-              keys: arrayRemove({ name: data.name, secret: data.secret, archived: data.archived }),
-            });
-
-            // Add new key with updated archived status
-            await updateDoc(userRef, {
-              keys: arrayUnion({ name: data.name, secret: data.secret, archived: !data.archived }),
-            });
+            // Update archived status locally
+            const userId = userRef || '';
+            const current = await (await import('../util/storage')).getUserData(userId);
+            if (current) {
+              const newKeys = current.keys.map((k) => (k.name === data.name ? { ...k, archived: !k.archived } : k));
+              await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
+            }
           }
         }}
         onMouseDown={(e) => e.stopPropagation()}
@@ -199,7 +197,14 @@ export function TokenCard({
           const confirm = window.confirm(`Are you sure you want to remove ${data.name}? This cannot be undone!`);
           if (confirm) {
             const confirm2 = window.confirm(`Are you really sure you want to delete ${data.name}?`);
-            if (confirm2) updateDoc(userRef, { keys: arrayRemove(data) });
+            if (confirm2) {
+              const userId = userRef || '';
+              const current = await (await import('../util/storage')).getUserData(userId);
+              if (current) {
+                const newKeys = current.keys.filter((k) => !(k.name === data.name && k.secret === data.secret));
+                await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
+              }
+            }
           }
         }}
         onMouseDown={(e) => e.stopPropagation()}

@@ -1,9 +1,9 @@
-import { DocumentData, DocumentReference, updateDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
 import { UserData } from './useUserData';
+import { updateUserData } from '../util/storage';
 
-export function useMigrateData(userRef: DocumentReference<UserData, DocumentData>, data?: UserData) {
+export function useMigrateData(userRef: string | undefined, data?: UserData) {
   const [migrated, setMigrated] = useState(false);
 
   const migrateData = async (oldData: UserData) => {
@@ -16,9 +16,7 @@ export function useMigrateData(userRef: DocumentReference<UserData, DocumentData
     // Update the user data with the new keys if necessary
     if (JSON.stringify(updatedKeys) !== JSON.stringify(oldData.keys)) {
       console.log('Upgrading user data keys to include archived property');
-      await updateDoc(userRef, {
-        keys: updatedKeys,
-      });
+      if (userRef) await updateUserData(userRef, { keys: updatedKeys });
     }
   };
 

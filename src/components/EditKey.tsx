@@ -1,5 +1,4 @@
 import { decrypt, encrypt } from '@metamask/browser-passworder';
-import { DocumentReference, arrayRemove, arrayUnion, updateDoc } from 'firebase/firestore';
 import { useContext, useEffect, useState } from 'react';
 import { FaEye, FaEyeSlash, FaQrcode } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -13,7 +12,7 @@ interface EditKeyProps {
   name?: string;
   secret?: string;
   archived?: boolean;
-  userRef: DocumentReference;
+  userRef: string | undefined;
   close: () => void;
 }
 
@@ -63,17 +62,25 @@ export function EditKey(props: EditKeyProps) {
 
     try {
       setUpdating(true);
-      if (editing) {
-        await updateDoc(props.userRef, {
-          keys: arrayRemove({ name: props.name, secret: props.secret, archived: props.archived }),
-        });
-        if (props.name) secretCache.delete(props.name);
+        if (editing) {
+        const userId = props.userRef || '';
+        const current = await (await import('../util/storage')).getUserData(userId);
+        if (current) {
+          const newKeys = current.keys.filter((k) => !(k.name === props.name && k.secret === props.secret));
+          await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
+          if (props.name) secretCache.delete(props.name);
+        }
       }
 
       const encryptedSecret = await encrypt(token, { secret });
-      await updateDoc(props.userRef, {
-        keys: arrayUnion({ name, secret: encryptedSecret, archived: props.archived }),
-      });
+      const userId = props.userRef || '';
+      const current = await (await import('../util/storage')).getUserData(userId);
+      if (current) {
+        const newKeys = [...current.keys, { name, secret: encryptedSecret, archived: props.archived }];
+        await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
+      } else {
+        await (await import('../util/storage')).setUserData(userId, { keys: [{ name, secret: encryptedSecret, archived: props.archived }], recentKeys: [], email: '', code: '', webauthn: [] });
+      }
       setName('');
       setSecret('');
       setMasked(true);

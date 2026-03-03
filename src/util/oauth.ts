@@ -1,0 +1,94 @@
+// PKCE helpers and GitHub OAuth starter for static-first flow
+
+function base64urlencode(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer);
+  let str = '';
+  for (let i = 0; i < bytes.byteLength; i++) str += String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function sha256(plain: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return hash;
+}
+
+export function generateCodeVerifier() {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return base64urlencode(array.buffer);
+}
+
+export async function generateCodeChallenge(codeVerifier: string) {
+  const hashed = await sha256(codeVerifier);
+  return base64urlencode(hashed);
+}
+
+export function makeState() {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array).map((b) => ('0' + b.toString(16)).slice(-2)).join('');
+}
+
+const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || '';
+const REDIRECT_URI = `${location.origin}/oauth/callback`;
+const SCOPE = 'read:user user:email';
+
+export async function startGitHubOAuth() {
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  const state = makeState();
+
+  sessionStorage.setItem('oauth_code_verifier', codeVerifier);
+  sessionStorage.setItem('oauth_state', state);
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    scope: SCOPE,
+    state,
+    code_challenge: codeChallenge,
+    code_challenge_method: 'S256',
+    allow_signup: 'false',
+  });
+
+  location.href = `https://github.com/login/oauth/authorize?${params.toString()}`;
+}
+
+export async function exchangeCodeForToken(code: string, codeVerifier: string) {
+  // Attempt browser-side exchange. This may fail due to CORS — fallback is a worker.
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: REDIRECT_URI,
+    code_verifier: codeVerifier,
+  });
+
+  const res = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+    body: params.toString(),
+  });
+
+  if (!res.ok) throw new Error('token exchange failed');
+  const json = await res.json();
+  return json.access_token as string;
+}
+
+export async function fetchGitHubProfile(token: string) {
+  const res = await fetch('https://api.github.com/user', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error('failed to fetch profile');
+  const profile = await res.json();
+  // fetch email
+  const emailRes = await fetch('https://api.github.com/user/emails', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const emails = await emailRes.json();
+  const primary = Array.isArray(emails) ? emails.find((e: any) => e.primary)?.email : undefined;
+
+  return { id: String(profile.id), login: profile.login, email: profile.email || primary };
+}

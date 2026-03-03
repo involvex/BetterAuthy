@@ -1,5 +1,4 @@
 import { decrypt } from '@metamask/browser-passworder';
-import { DocumentReference, arrayRemove, updateDoc } from 'firebase/firestore';
 import { FaFingerprint } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -15,7 +14,7 @@ export function WebauthnLogin({
   unlock,
 }: {
   webauthn: Auth;
-  userRef: DocumentReference;
+  userRef: string | undefined;
   unlock: (code: string) => void;
 }) {
   useVisibilityChange((visible) => {
@@ -32,9 +31,14 @@ export function WebauthnLogin({
   const bindHold = useOnHold(
     () => {
       if (webauthn && confirm('Reset Biometric Auth?')) {
-        updateDoc(userRef, {
-          webauthn: arrayRemove({ ...webauthn }),
-        });
+        (async () => {
+          const userId = userRef || '';
+          const current = await (await import('../../util/storage')).getUserData(userId);
+          if (current) {
+            const newWebauthn = current.webauthn.filter((w) => w.credentialId !== webauthn.credentialId);
+            await (await import('../../util/storage')).updateUserData(userId, { webauthn: newWebauthn });
+          }
+        })();
       }
     },
     () => biometricLogin(),

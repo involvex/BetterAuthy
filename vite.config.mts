@@ -22,11 +22,11 @@ const manifest: Partial<ManifestOptions> = {
   theme_color: '#2c2155',
   background_color: '#051524',
   display: 'standalone',
-  start_url: '/factor/',
-  id: 'com.amcolash.factor',
-  name: 'Factor',
-  short_name: 'Factor',
-  description: 'Factor is a 2FA app built using React and Firebase. Data is stored offline and encrypted at rest.',
+  start_url: '/betterauthy/',
+  id: 'com.involvex.betterauthy',
+  name: 'BetterAuthy',
+  short_name: 'BetterAuthy',
+  description: 'BetterAuthy is a 2FA app built using React and Firebase. Data is stored offline and encrypted at rest.',
   orientation: 'any',
   icons: [
     {
@@ -113,7 +113,7 @@ const runtimeCaching: RuntimeCaching[] = [
 ];
 
 export default defineConfig({
-  base: '/factor/',
+  base: '/betterauthy/',
   build: {
     modulePreload: {
       resolveDependencies: (url, deps, context) => {

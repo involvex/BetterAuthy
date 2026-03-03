@@ -1,4 +1,4 @@
-import { DocumentReference, updateDoc } from 'firebase/firestore';
+import { updateUserData } from '../util/storage';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
@@ -22,7 +22,7 @@ export function TokenList({
   lock,
 }: {
   userData: UserData;
-  userRef: DocumentReference;
+  userRef: string | undefined;
   editMode: boolean;
   setEditMode: (value: boolean) => void;
   editKey: boolean;
@@ -69,7 +69,7 @@ export function TokenList({
       }
 
       if (JSON.stringify(recentKeys) !== JSON.stringify(userData.recentKeys)) {
-        await updateDoc(userRef, { recentKeys });
+        await updateUserData(userRef || '', { recentKeys });
       }
     },
     [userData.recentKeys, userRef]

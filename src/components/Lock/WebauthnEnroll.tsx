@@ -1,12 +1,11 @@
 import { decrypt, encrypt } from '@metamask/browser-passworder';
-import { DocumentReference, arrayUnion, updateDoc } from 'firebase/firestore';
 import { FaFingerprint } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 import { useUUID } from '../../hooks/useUUID';
 import { register } from '../../util/webauthn';
 
-export function WebauthnEnroll({ userRef, encryptedCode }: { userRef: DocumentReference; encryptedCode: string }) {
+export function WebauthnEnroll({ userRef, encryptedCode }: { userRef: string | undefined; encryptedCode: string }) {
   const uuid = useUUID();
 
   const biometricRegister = async () => {
@@ -19,14 +18,12 @@ export function WebauthnEnroll({ userRef, encryptedCode }: { userRef: DocumentRe
 
       const encryptedSecret = await encrypt(userHandle, decryptedSecret);
 
-      updateDoc(userRef, {
-        webauthn: arrayUnion({
-          credentialId: credential?.credentialId,
-          uuid,
-          secret: encryptedSecret,
-          userAgent: navigator.userAgent,
-        }),
-      });
+      const userId = userRef || '';
+      const current = await (await import('../../util/storage')).getUserData(userId);
+      if (current) {
+        const newWebauthn = [...(current.webauthn || []), { credentialId: credential?.credentialId, uuid, secret: encryptedSecret, userAgent: navigator.userAgent }];
+        await (await import('../../util/storage')).updateUserData(userId, { webauthn: newWebauthn });
+      }
 
       toast.success('Successfully enrolled biometric login');
     } catch (err) {

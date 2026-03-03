@@ -1,4 +1,3 @@
-import { DocumentReference, arrayUnion, updateDoc } from '@firebase/firestore';
 import { decrypt, encrypt } from '@metamask/browser-passworder';
 import { toast } from 'react-toastify';
 
@@ -57,7 +56,13 @@ export async function importKeys(token: string, data: UserData, userRef: Documen
                 skipped++;
               } else {
                 const encryptedSecret = await encrypt(token, key.secret);
-                await updateDoc(userRef, { keys: arrayUnion({ name, secret: encryptedSecret, archived }) });
+                const userId = userRef || '';
+                const current = await (await import('../util/storage')).getUserData(userId);
+                if (current) {
+                  await (await import('../util/storage')).updateUserData(userId, { keys: [...current.keys, { name, secret: encryptedSecret, archived }] });
+                } else {
+                  await (await import('../util/storage')).setUserData(userId, { keys: [{ name, secret: encryptedSecret, archived }], recentKeys: [], email: '', code: '', webauthn: [] });
+                }
                 imported++;
               }
             }

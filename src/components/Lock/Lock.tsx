@@ -1,4 +1,5 @@
-import { DocumentReference } from 'firebase/firestore';
+// userRef is now a string id (local storage)
+
 import { useRef } from 'react';
 
 // import { OS, useOsType } from '../../hooks/useOsType';
@@ -19,7 +20,7 @@ export function Lock({
   unlock: (code: string) => void;
   encryptedCode: string;
   data?: UserData;
-  userRef: DocumentReference;
+  userRef: string | undefined;
 }) {
   const pinRef = useRef<HTMLInputElement[]>(null);
   const uuid = useUUID();

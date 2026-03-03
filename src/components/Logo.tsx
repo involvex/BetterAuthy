@@ -1,4 +1,5 @@
 import { twJoin, twMerge } from 'tailwind-merge';
+import type { HTMLAttributes } from 'react';
 
 import image from '../images/logo.png';
 
@@ -6,15 +7,11 @@ export function Logo({ className }: { className?: string }) {
   return <img src={image} className={twMerge('h-52', className)} />;
 }
 
-export function LogoPage({
-  className,
-  children,
-  ...props
-}: {
+interface LogoPageProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
-  children?: React.ReactNode;
-  [key: string]: any;
-}) {
+}
+
+export function LogoPage({ className, children, ...props }: LogoPageProps) {
   return (
     <div className="w-screen h-[100svh] flex flex-col justify-center items-center gap-5" {...props}>
       <h1 className="text-center m-0 -mb-1">BetterAuthy 2FA</h1>

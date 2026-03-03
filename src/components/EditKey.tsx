@@ -76,10 +76,19 @@ export function EditKey(props: EditKeyProps) {
       const userId = props.userRef || '';
       const current = await (await import('../util/storage')).getUserData(userId);
       if (current) {
-        const newKeys = [...current.keys, { name, secret: encryptedSecret, archived: props.archived }];
+        const newKeys = [
+          ...current.keys,
+          { name, secret: encryptedSecret, archived: props.archived ?? false },
+        ];
         await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
       } else {
-        await (await import('../util/storage')).setUserData(userId, { keys: [{ name, secret: encryptedSecret, archived: props.archived }], recentKeys: [], email: '', code: '', webauthn: [] });
+        await (await import('../util/storage')).setUserData(userId, {
+          keys: [{ name, secret: encryptedSecret, archived: props.archived ?? false }],
+          recentKeys: [],
+          email: '',
+          code: '',
+          webauthn: [],
+        });
       }
       setName('');
       setSecret('');

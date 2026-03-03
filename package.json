@@ -8,9 +8,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "typewatch": "tsc --noEmit --watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prebuild": "bun run lint:fix && bun run typecheck"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prebuild": "npm run lint:fix && npm run typecheck"
   },
   "license": "MIT",
   "dependencies": {
@@ -19,6 +19,7 @@
     "buffer": "^6.0.3",
     "firebase": "^12.9.0",
     "focus-trap-react": "^12.0.0",
+    "jiti": "^2.6.1",
     "js-levenshtein": "^1.1.6",
     "react": "^19.2.4",
     "react-circular-progressbar": "^2.2.0",

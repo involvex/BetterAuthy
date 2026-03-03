@@ -6,7 +6,7 @@ import { useTailwindSize } from '~hooks/useTailwindSize';
 
 import { CodeContext } from '../contexts/CodeContext';
 import { useRefreshTimer } from '../hooks/useRefreshTimer';
-import { Key, UserData } from '../hooks/useUserData';
+import type { Key, UserData } from '../types/auth';
 import logo from '../images/logo.png';
 import { EditKey } from './EditKey';
 import { Modal } from './Modal';

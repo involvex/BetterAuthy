@@ -112,8 +112,10 @@ const runtimeCaching: RuntimeCaching[] = [
   },
 ];
 
+const basePath = import.meta.env?.VITE_BASE_URL || '/betterauthy/';
+
 export default defineConfig({
-  base: '/betterauthy/',
+  base: basePath,
   build: {
     modulePreload: {
       resolveDependencies: (url, deps, context) => {

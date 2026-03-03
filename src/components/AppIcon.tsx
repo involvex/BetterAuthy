@@ -40,7 +40,7 @@ interface Image {
 function getIcon(name?: string): Icon | Image | undefined {
   if (!name) return undefined;
 
-  let icon = Object.entries(icons)
+  const icon = Object.entries(icons)
     .filter(
       (e) =>
         name.toLowerCase().includes(e[1].title.toLowerCase()) &&

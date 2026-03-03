@@ -87,18 +87,36 @@ export async function exchangeCodeForToken(code: string, codeVerifier: string) {
   return json.access_token as string;
 }
 
+interface GitHubProfile {
+  id: number;
+  login: string;
+  email?: string;
+}
+
+interface GitHubEmail {
+  email: string;
+  primary?: boolean;
+  verified?: boolean;
+}
+
 export async function fetchGitHubProfile(token: string) {
   const res = await fetch('https://api.github.com/user', {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error('failed to fetch profile');
-  const profile = await res.json();
+  const profile = (await res.json()) as GitHubProfile;
+
   // fetch email
   const emailRes = await fetch('https://api.github.com/user/emails', {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const emails = await emailRes.json();
-  const primary = Array.isArray(emails) ? emails.find((e: any) => e.primary)?.email : undefined;
+  const emailPayload = (await emailRes.json()) as GitHubEmail[] | Record<string, unknown>;
+  const emails = Array.isArray(emailPayload) ? emailPayload : [];
+  const primary = emails.find((e) => e.primary)?.email;
 
-  return { id: String(profile.id), login: profile.login, email: profile.email || primary };
+  return {
+    id: String(profile.id),
+    login: profile.login,
+    email: profile.email || primary,
+  };
 }

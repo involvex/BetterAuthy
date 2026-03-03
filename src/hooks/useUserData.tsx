@@ -1,27 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getUserData } from '../util/storage';
 import { getUserId } from '../util/session';
-
-export interface UserData {
-  email: string;
-  keys: Key[];
-  recentKeys: string[];
-  code: string;
-  webauthn: Auth[];
-}
-
-export interface Auth {
-  credentialId: string;
-  uuid: string;
-  secret: string;
-  userAgent: string;
-}
-
-export interface Key {
-  name: string;
-  secret: string;
-  archived: boolean;
-}
+import type { UserData } from '../types/auth';
 
 export function useUserData() {
   const [data, setData] = useState<UserData | undefined>(undefined);
@@ -40,10 +20,12 @@ export function useUserData() {
     getUserData(userId)
       .then((d) => {
         if (!mounted) return;
-        // normalize missing archived fields and other shape differences
         if (d) {
-          const normalized = { ...d, keys: (d.keys || []).map((k) => ({ archived: false, ...k })) };
-          setData(normalized as unknown as UserData);
+          const normalized: UserData = {
+            ...d,
+            keys: (d.keys || []).map((k) => ({ ...k, archived: k.archived ?? false })),
+          };
+          setData(normalized);
         } else setData(undefined);
         setLoading(false);
       })

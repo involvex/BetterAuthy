@@ -49,8 +49,9 @@ export async function authenticate(credentialId: string): Promise<string | null>
 
     const credential = (await navigator.credentials.get({ publicKey })) as PublicKeyCredential;
 
-    if (credential?.response) {
-      return arrayBufferToBase64((credential.response as any).userHandle);
+    const assertionResponse = credential?.response as AuthenticatorAssertionResponse | null;
+    if (assertionResponse?.userHandle) {
+      return arrayBufferToBase64(assertionResponse.userHandle);
     }
   } catch (error) {
     console.error('Error authenticating:', error);

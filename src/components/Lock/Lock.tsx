@@ -1,10 +1,11 @@
 // userRef is now a string id (local storage)
 
 import { useRef } from 'react';
+import type { MouseEvent } from 'react';
 
 // import { OS, useOsType } from '../../hooks/useOsType';
 import { useUUID } from '../../hooks/useUUID';
-import { UserData } from '../../hooks/useUserData';
+import type { UserData } from '../../types/auth';
 import { LogoPage } from '../Logo';
 import { Logout } from './Logout';
 import { PinCode } from './PinCode';
@@ -37,11 +38,11 @@ export function Lock({
   const webauthn = data?.webauthn?.find((a) => a.uuid === uuid);
 
   return (
-    <LogoPage
-      onClick={(e: any) => {
-        const node = e.target?.nodeName;
-        if (pinRef.current && (node === 'DIV' || node === 'IMG' || node === 'H1')) pinRef.current[0].focus();
-      }}
+      <LogoPage
+        onClick={(e: MouseEvent<HTMLDivElement>) => {
+          const node = (e.target as Element | null)?.nodeName;
+          if (pinRef.current && (node === 'DIV' || node === 'IMG' || node === 'H1')) pinRef.current[0].focus();
+        }}
       style={{ marginTop: 'calc(-1 * env(keyboard-inset-height) / 2)' }}
     >
       <div className="flex fixed top-4 right-4 gap-2">

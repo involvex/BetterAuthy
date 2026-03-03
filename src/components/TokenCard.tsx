@@ -1,5 +1,6 @@
 import { decrypt } from '@metamask/browser-passworder';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import { FaArchive, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { twJoin } from 'tailwind-merge';
@@ -9,9 +10,8 @@ import { CodeContext } from '../contexts/CodeContext';
 import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useOnHold } from '../hooks/useOnHold';
-import { Key } from '../hooks/useUserData';
+import type { Key } from '../types/auth';
 import { AppIcon } from './AppIcon';
-import { updateUserData } from '../util/storage';
 
 enum HiddenType {
   Hidden,
@@ -135,7 +135,7 @@ export function TokenCard({
       style={{ animationDelay: `${Math.random() * 250}ms` }}
       tabIndex={0}
       {...bindHold()}
-      onKeyDown={(e) => {
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'Enter' || e.key === ' ') onClick();
       }}
     >

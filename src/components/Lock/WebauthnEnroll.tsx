@@ -14,14 +14,21 @@ export function WebauthnEnroll({ userRef, encryptedCode }: { userRef: string | u
       const decryptedSecret = (await decrypt(pin, encryptedCode)) as { token: string };
 
       const credential = await register();
-      const userHandle = credential?.userHandle || '';
+      if (!credential?.credentialId) {
+        toast.error('Failed to register biometric credential');
+        return;
+      }
+      const userHandle = credential.userHandle || '';
 
       const encryptedSecret = await encrypt(userHandle, decryptedSecret);
 
       const userId = userRef || '';
       const current = await (await import('../../util/storage')).getUserData(userId);
       if (current) {
-        const newWebauthn = [...(current.webauthn || []), { credentialId: credential?.credentialId, uuid, secret: encryptedSecret, userAgent: navigator.userAgent }];
+        const newWebauthn = [
+          ...(current.webauthn || []),
+          { credentialId: credential.credentialId, uuid, secret: encryptedSecret, userAgent: navigator.userAgent },
+        ];
         await (await import('../../util/storage')).updateUserData(userId, { webauthn: newWebauthn });
       }
 

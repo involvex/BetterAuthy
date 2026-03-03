@@ -1,13 +1,6 @@
 // Minimal IndexedDB helper for user data storage
 // Keeps UserData shape compatible with previous Firestore document
-
-export interface UserData {
-  email: string;
-  keys: Array<{ name: string; secret: string; archived?: boolean }>;
-  recentKeys: string[];
-  code: string;
-  webauthn: Array<any>;
-}
+import type { UserData } from '../types/auth';
 
 const DB_NAME = 'betterauthy_db';
 const DB_VERSION = 1;

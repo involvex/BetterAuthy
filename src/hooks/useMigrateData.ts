@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { UserData } from './useUserData';
+import type { UserData } from '../types/auth';
 import { updateUserData } from '../util/storage';
 
 export function useMigrateData(userRef: string | undefined, data?: UserData) {

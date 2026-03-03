@@ -17,7 +17,7 @@ export function setSession(session: Session) {
   }
   try {
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  } catch (e) {
+  } catch {
     // fallback to sessionStorage
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
   }
@@ -33,7 +33,7 @@ export function getSession(): Session | undefined {
       return undefined;
     }
     return s;
-  } catch (e) {
+  } catch {
     return undefined;
   }
 }

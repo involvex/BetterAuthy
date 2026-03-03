@@ -104,7 +104,7 @@ function Authorized({ userId }: { userId: string }) {
     if (!loading && !error && !data) {
       promptPin().then((code) => {
         if (code)
-          setUserData(userId, { keys: [], recentKeys: [], email: '', code, webauthn: [] }).catch((e) =>
+          setUserData(userId, { keys: [], recentKeys: [], email: '', code, webauthn: [] }).catch((_e) =>
             toast.error('Failed to create user')
           );
         else toast.error('Failed to create user');
@@ -132,7 +132,7 @@ function Authorized({ userId }: { userId: string }) {
     return (
       <>
         <OnlineStatus className="!bottom-4 !left-4 top-auto" />
-        <Lock unlock={(code) => setToken(code)} encryptedCode={data?.code!} data={data} userRef={userKey} />
+        <Lock unlock={(code) => setToken(code)} encryptedCode={data.code} data={data} userRef={userKey} />
       </>
     );
 

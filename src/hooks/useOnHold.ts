@@ -1,4 +1,5 @@
 import { LongPressCallbackReason, useLongPress } from 'use-long-press';
+import type { KeyboardEvent } from 'react';
 
 export function useOnHold(onClick: () => void, onHold: () => void, duration: number = 600) {
   const longPress = useLongPress(onClick, {
@@ -12,7 +13,7 @@ export function useOnHold(onClick: () => void, onHold: () => void, duration: num
 
   return () => {
     return {
-      onKeyDown: (e: any) => {
+      onKeyDown: (e: KeyboardEvent) => {
         if (e.key === 'Enter' || e.key === ' ') onClick();
       },
       ...longPress(),

@@ -1,7 +1,7 @@
 import { decrypt, encrypt } from '@metamask/browser-passworder';
 import { toast } from 'react-toastify';
 
-import { Key, UserData } from '../hooks/useUserData';
+import type { Key, UserData } from '../types/auth';
 
 export async function exportKeys(token: string, data: UserData): Promise<void> {
   const toastId = toast('Exporting keys ⏳️\nThis might take some time...', {
@@ -35,12 +35,12 @@ export async function exportKeys(token: string, data: UserData): Promise<void> {
 export async function importKeys(token: string, data: UserData, userRef: string | undefined): Promise<void> {
   const input = document.createElement('input');
   input.type = 'file';
-  input.addEventListener('change', (e) => {
+  input.addEventListener('change', () => {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       // Read JSON file
       const reader = new FileReader();
-      reader.onload = async (e) => {
+      reader.onload = async (e: ProgressEvent<FileReader>) => {
         try {
           if (e.target) {
             const keys: Key[] = JSON.parse(e.target.result as string);
@@ -72,7 +72,8 @@ export async function importKeys(token: string, data: UserData, userRef: string 
           }
         } catch (err) {
           console.error(err);
-          toast.error((err as any) || 'Error importing keys');
+        const message = err instanceof Error ? err.message : 'Error importing keys';
+        toast.error(message);
         }
       };
 

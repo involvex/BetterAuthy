@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import { useEffectOnce } from '../../hooks/useEffectOnce';
 import { useOnHold } from '../../hooks/useOnHold';
-import { Auth } from '../../hooks/useUserData';
+import type { WebauthnEntry } from '../../types/auth';
 import { useVisibilityChange } from '../../hooks/useVisibilityChange';
 import { authenticate } from '../../util/webauthn';
 
@@ -13,7 +13,7 @@ export function WebauthnLogin({
   userRef,
   unlock,
 }: {
-  webauthn: Auth;
+  webauthn: WebauthnEntry;
   userRef: string | undefined;
   unlock: (code: string) => void;
 }) {

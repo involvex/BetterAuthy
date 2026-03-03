@@ -18,11 +18,21 @@ if (existsSync(KEY) && existsSync(CERT)) {
   };
 }
 
+const normalizeBasePath = (value?: string) => {
+  const defaultBase = '/BetterAuthy/';
+  let path = value?.trim() || defaultBase;
+  if (!path.startsWith('/')) path = `/${path}`;
+  if (!path.endsWith('/')) path += '/';
+  return path;
+};
+
+const basePath = normalizeBasePath(import.meta.env?.VITE_BASE_URL);
+
 const manifest: Partial<ManifestOptions> = {
   theme_color: '#2c2155',
   background_color: '#051524',
   display: 'standalone',
-  start_url: '/betterauthy/',
+  start_url: basePath,
   id: 'com.involvex.betterauthy',
   name: 'BetterAuthy',
   short_name: 'BetterAuthy',
@@ -111,8 +121,6 @@ const runtimeCaching: RuntimeCaching[] = [
     },
   },
 ];
-
-const basePath = import.meta.env?.VITE_BASE_URL || '/betterauthy/';
 
 export default defineConfig({
   base: basePath,

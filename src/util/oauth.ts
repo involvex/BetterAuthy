@@ -32,10 +32,20 @@ export function makeState() {
 }
 
 const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || '';
-const REDIRECT_URI = `${location.origin}/oauth/callback`;
+const REDIRECT_URI = import.meta.env.VITE_GITHUB_REDIRECT_URI || `${location.origin}/oauth/callback`;
 const SCOPE = 'read:user user:email';
 
+import { setSession } from './session';
+
 export async function startGitHubOAuth() {
+  // In dev, skip real OAuth to simplify local testing
+  if (import.meta.env.DEV) {
+    setSession({ userId: 'dev', login: 'dev', email: 'dev@local', token: 'dev-token', expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 });
+    // Redirect to root after mocking session
+    location.href = '/';
+    return;
+  }
+
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
   const state = makeState();

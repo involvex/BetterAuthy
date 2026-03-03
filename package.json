@@ -7,7 +7,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "typewatch": "tsc --noEmit --watch"
+    "typewatch": "tsc --noEmit --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prebuild": "bun run lint:fix && bun run typecheck"
   },
   "license": "MIT",
   "dependencies": {
@@ -30,6 +33,8 @@
     "use-long-press": "^3.3.0"
   },
   "devDependencies": {
+    "@eslint/css": "^0.14.1",
+    "@eslint/js": "^10.0.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/js-levenshtein": "^1.1.3",
     "@types/node": "^25.3.0",
@@ -38,10 +43,14 @@
     "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.26",
     "babel-preset-nano-react-app": "^0.1.0",
+    "eslint": "^10.0.2",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.4.0",
     "postcss": "^8.5.6",
     "prettier": "^3.8.1",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
     "vite-plugin-pwa": "^1.2.0",
     "vite-tsconfig-paths": "^6.1.1"

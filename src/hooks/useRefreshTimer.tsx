@@ -5,7 +5,7 @@ export function useRefreshTimer() {
 
   useEffect(() => {
     // 30 second refresh (updated at 0 seconds, 30 seconds, 60 seconds, etc.)
-    let timestampInt: NodeJS.Timeout;
+    let timestampInt: ReturnType<typeof setInterval> | undefined;
     setTimeout(
       () => {
         setTimestamp(new Date());
@@ -27,7 +27,7 @@ export function useSecondTimer() {
 
   useEffect(() => {
     // 1 second refresh
-    const timeInt: NodeJS.Timeout = setInterval(() => setTime(new Date()), 1000);
+    const timeInt = setInterval(() => setTime(new Date()), 1000);
 
     return () => {
       clearInterval(timeInt);

@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useVisibilityChange } from './useVisibilityChange';
 
 export function useLockTimer(setToken: (token: string | undefined) => void) {
-  const timer = useRef<NodeJS.Timeout>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Lock the token after 15 seconds of inactivity
   useVisibilityChange((visible) => {

@@ -2,15 +2,18 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "jsx": "react-jsx",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "paths": {
       "~*": ["./*"]
     },
     "strict": true,
-    "target": "ES2015",
+    "skipLibCheck": true,
+    "target": "ES2019",
     "allowSyntheticDefaultImports": true,
-    "types": ["vite-plugin-pwa/client", "vite", "vite/client"],
-    "module": "ES2020"
+    "types": ["vite-plugin-pwa/client", "vite/client"],
+    "module": "ESNext",
+    "lib": ["ES2019", "DOM"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

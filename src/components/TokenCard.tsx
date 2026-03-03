@@ -78,7 +78,7 @@ export function TokenCard({
   }, [data.secret, encryptionToken, hidden]);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
 
     // Hide code shortly after revealed
     if (hidden !== HiddenType.Hidden) {
@@ -191,7 +191,7 @@ export function TokenCard({
         className="remove absolute -top-3 -right-3 !p-1 text-slate-800 bg-white border border-slate-400 rounded-full hover:text-white sm:hover:bg-danger transition-all duration-300"
         style={{ pointerEvents: editMode ? 'auto' : 'none', opacity: editMode ? 1 : 0 }}
         tabIndex={editMode ? 0 : -1}
-        onClick={(e) => {
+        onClick={async (e) => {
           e.stopPropagation();
 
           const confirm = window.confirm(`Are you sure you want to remove ${data.name}? This cannot be undone!`);
@@ -199,10 +199,11 @@ export function TokenCard({
             const confirm2 = window.confirm(`Are you really sure you want to delete ${data.name}?`);
             if (confirm2) {
               const userId = userRef || '';
-              const current = await (await import('../util/storage')).getUserData(userId);
+              const storage = await import('../util/storage');
+              const current = await storage.getUserData(userId);
               if (current) {
                 const newKeys = current.keys.filter((k) => !(k.name === data.name && k.secret === data.secret));
-                await (await import('../util/storage')).updateUserData(userId, { keys: newKeys });
+                await storage.updateUserData(userId, { keys: newKeys });
               }
             }
           }

@@ -17,11 +17,12 @@ export function PinCode({
   className?: string;
 }) {
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && !unlocked) {
-      onCodeEntered(import.meta.env.VITE_CODE);
+    if (import.meta.env.DEV && !unlocked) {
+      const code = import.meta.env.VITE_CODE as string | undefined;
+      if (code) onCodeEntered(code);
       unlocked = true;
     } else {
-      setTimeout(() => pinRef.current?.[0].focus(), 250);
+      setTimeout(() => pinRef.current?.[0]?.focus(), 250);
     }
   }, []);
 

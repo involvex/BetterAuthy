@@ -24,7 +24,7 @@ export function LogoPage({
       <span
         className={twJoin(
           'absolute bottom-1.5 right-2 leading-tight whitespace-pre text-right',
-          process.env.NODE_ENV === 'production' ? 'text-[8px]' : 'text-sm'
+          (import.meta.env.PROD ? 'text-[8px]' : 'text-sm')
         )}
       >
         {new Date(__BUILD_TIME__).toLocaleString().replace(', ', '\n')}

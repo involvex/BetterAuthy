@@ -32,7 +32,7 @@ export async function exportKeys(token: string, data: UserData): Promise<void> {
   URL.revokeObjectURL(url);
 }
 
-export async function importKeys(token: string, data: UserData, userRef: DocumentReference): Promise<void> {
+export async function importKeys(token: string, data: UserData, userRef: string | undefined): Promise<void> {
   const input = document.createElement('input');
   input.type = 'file';
   input.addEventListener('change', (e) => {

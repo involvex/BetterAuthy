@@ -8,8 +8,8 @@ import { registerSW } from 'virtual:pwa-register';
 import { App } from './components/App';
 
 // Fixes for browser-passworder
-window.global ||= window;
-globalThis.Buffer = Buffer;
+;(window as any).global ||= window;
+;(globalThis as any).Buffer = Buffer;
 
 // If a pwa on desktop, resize window a bit smaller
 const isBrowser = matchMedia('(display-mode: browser)').matches;

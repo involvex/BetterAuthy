@@ -40,7 +40,11 @@ export function useUserData() {
     getUserData(userId)
       .then((d) => {
         if (!mounted) return;
-        setData(d);
+        // normalize missing archived fields and other shape differences
+        if (d) {
+          const normalized = { ...d, keys: (d.keys || []).map((k) => ({ archived: false, ...k })) };
+          setData(normalized as unknown as UserData);
+        } else setData(undefined);
         setLoading(false);
       })
       .catch((e) => {

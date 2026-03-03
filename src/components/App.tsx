@@ -116,7 +116,7 @@ function Authorized({ userId }: { userId: string }) {
     if (!confirm('Would you like to update your pin?')) return;
     const code = await promptPin(token);
 
-    if (code) updateUserData(userKey, { code });
+    if (code && userKey) updateUserData(userKey, { code });
     else toast.error('Failed to update pin');
   };
 
@@ -132,7 +132,7 @@ function Authorized({ userId }: { userId: string }) {
     return (
       <>
         <OnlineStatus className="!bottom-4 !left-4 top-auto" />
-        <Lock unlock={(code) => setToken(code)} encryptedCode={data?.code!} data={data} userRef={userRef} />
+        <Lock unlock={(code) => setToken(code)} encryptedCode={data?.code!} data={data} userRef={userKey} />
       </>
     );
 
@@ -141,7 +141,7 @@ function Authorized({ userId }: { userId: string }) {
       <OnlineStatus />
       <TokenList
         userData={data}
-        userRef={userRef}
+        userRef={userKey}
         editMode={editMode}
         setEditMode={setEditMode}
         editKey={editKey}
@@ -156,7 +156,7 @@ function Authorized({ userId }: { userId: string }) {
         setEditKey={setEditKey}
         setEditMode={setEditMode}
         exportKeys={() => exportKeys(token, data)}
-        importKeys={() => importKeys(token, data, userRef)}
+        importKeys={() => importKeys(token, data, userKey)}
       />
     </CodeContext.Provider>
   );

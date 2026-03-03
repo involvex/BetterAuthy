@@ -10,16 +10,16 @@ export interface Credential {
 export async function register(): Promise<Credential | null> {
   try {
     const userHandle = Uint8Array.from(window.crypto.getRandomValues(new Uint8Array(32)));
-    const currentUser = auth.currentUser;
+    // Use local session for user metadata if available
     const publicKey: PublicKeyCredentialCreationOptions = {
       challenge, // Not really necessary since this is 100% local
       rp: {
-        name: 'Factor',
+        name: 'BetterAuthy',
       },
       user: {
-        id: userHandle, // This is both our userid, but also our encryption secret
-        name: currentUser?.email || 'user@email.com',
-        displayName: currentUser?.displayName || 'User',
+        id: userHandle.buffer ? userHandle.buffer : new Uint8Array(userHandle).buffer,
+        name: 'user@local',
+        displayName: 'User',
       },
 
       pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
@@ -59,14 +59,15 @@ export async function authenticate(credentialId: string): Promise<string | null>
   return null;
 }
 
-function arrayBufferToString(buffer: ArrayBuffer): string {
-  const uint8Array = new Uint8Array(buffer);
-  const array = Array.from(uint8Array);
-  return String.fromCharCode.apply(null, array);
+function arrayBufferToString(bufferOrView: ArrayBuffer | ArrayBufferView): string {
+  const uint8Array = bufferOrView instanceof ArrayBuffer ? new Uint8Array(bufferOrView) : new Uint8Array((bufferOrView as ArrayBufferView).buffer);
+  let binary = '';
+  for (let i = 0; i < uint8Array.length; i++) binary += String.fromCharCode(uint8Array[i]);
+  return binary;
 }
 
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  return btoa(arrayBufferToString(buffer));
+function arrayBufferToBase64(bufferOrView: ArrayBuffer | ArrayBufferView): string {
+  return btoa(arrayBufferToString(bufferOrView));
 }
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
